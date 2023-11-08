@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import 'ag-grid-community/styles/ag-grid.css';
@@ -10,18 +10,18 @@ import { Snackbar } from "@mui/material";
 export default function Carlist() {
 
     //state variables
-    const [cars, setCars] = useState([]);
+    const [cars, setCars] = useState([{brand: '', model: '', color: '', fuel: '', year: '', price: ''}]);
     const [msg, setMsg] = useState('');
     const [open, setOpen] = useState(false);
    
     //columns for cars ag-grid
     const columns = [
-        { field: 'brand' },
-        { field: 'model' },
-        { field: 'color' },
-        { field: 'fuel' },
-        { field: 'year' },
-        { field: 'price' },
+        { headerName: 'Brand', field: 'brand', sortable: true, filter: true },
+        { headerName: 'Model', field: 'model', sortable: true, filter: true },
+        { headerName: 'Color', field: 'color', sortable: true, filter: true },
+        { headerName: 'Fuel', field: 'fuel', sortable: true, filter: true },
+        { headerName: 'Year', field: 'year', sortable: true, filter: true },
+        { headerName: 'Price', field: 'price', sortable: true, filter: true },
         { 
             cellRenderer: params =>
                 <Button size="small" color="error" onClick = {() => deleteCar(params)}>
@@ -30,6 +30,8 @@ export default function Carlist() {
                 width: 120
         }
     ]
+
+    const gridRef = useRef();
 
     //call getCars() function when rendering the component very first time
     useEffect(() => getCars(), [])
@@ -63,12 +65,16 @@ export default function Carlist() {
 
     return(
         <>
-            <div className="ag-theme-material" style={{ height: '700px', width: '60%', margin: 'auto'}}>
+            <div className="ag-theme-material" style={{ height: '800px', width: '100%', margin: 'auto'}}>
                 <AgGridReact
                     rowData={cars}
                     columnDefs={columns}
+                    animateRows={true}
+                    rowSelection="single"
                     pagination ={true}
                     paginationPageSize={10}
+                    ref={gridRef}
+                    onGridReady={params => gridRef.current = params.api}
                 >
                 </AgGridReact>
                 <Snackbar
